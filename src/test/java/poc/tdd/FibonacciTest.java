@@ -6,13 +6,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FibonacciTest {
+abstract class FibonacciTest {
 
-    private final Fibonacci fibonacci = new Fibonacci();
+    protected final Fibonacci fibonacci;
 
-    private static Stream<Arguments> arguments() {
+    FibonacciTest(final Fibonacci fibonacci) {
+        this.fibonacci = fibonacci;
+    }
+
+    protected static Stream<Arguments> arguments() {
         return Stream.of(
                 Arguments.of(25, 75025),
                 Arguments.of(17, 1597),
@@ -28,6 +32,7 @@ public class FibonacciTest {
                 Arguments.of(7, 13),
                 Arguments.of(6, 8),
                 Arguments.of(5, 5),
+                Arguments.of(4, 3),
                 Arguments.of(3, 2),
                 Arguments.of(2, 1),
                 Arguments.of(1, 1)
@@ -36,14 +41,8 @@ public class FibonacciTest {
 
     @ParameterizedTest
     @MethodSource("arguments")
-    void testParams(final int input, final int expected) {
+    void test(final int input, final int expected) {
         assertEquals(expected, fibonacci.get(input));
-    }
-
-    @ParameterizedTest
-    @MethodSource("arguments")
-    void testParamsRecursive(final int input, final int expected) {
-        assertEquals(expected, fibonacci.getRecursive(input));
     }
 
 }
