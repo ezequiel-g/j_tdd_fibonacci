@@ -1,10 +1,14 @@
 package poc.tdd;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,6 +23,10 @@ class MainTest {
 
     private final Main main = new Main();
 
+    // TODO: can we make it static?
+    private final PrintStream outDefault = System.out;
+    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
     private static Stream<Arguments> argumentsInvalid() {
         return Stream.of(
                 // TODO: add "all" case
@@ -30,15 +38,45 @@ class MainTest {
         );
     }
 
+    @BeforeEach
+    void setUp() {
+        // TODO: move the new printer to a field and inline the ByteArray
+        System.setOut(new PrintStream(outputStreamCaptor));
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.setOut(outDefault);
+    }
+
     @ParameterizedTest
     @MethodSource("argumentsInvalid")
-    void testInvalid(String[] input, Class<IllegalArgumentException> expectedType, String errorMsg) {
+    void testInvalid(final String[] input, final Class<IllegalArgumentException> expectedType, final String expectedErrorMsg) {
         final IllegalArgumentException illegalArgumentException = assertThrows(expectedType, () -> Main.main(input));
-        assertEquals(errorMsg, illegalArgumentException.getMessage());
+        assertEquals(expectedErrorMsg, illegalArgumentException.getMessage());
+    }
+
+    @Test
+    void show() {
+        main.show("hello");
+        assertEquals("hello\r\n", outputStreamCaptor.toString());
+    }
+
+    @Test
+    void mainTest() {
+        Main.main(new String[]{"1"});
+        // TODO: replace newLine character with System defined lineSeparator
+        assertEquals(List.of(1) + "\r\n", outputStreamCaptor.toString());
+    }
+
+    @Test
+    void process() {
+        assertEquals(List.of(1).toString(), main.process(new String[]{"1"}));
     }
 
     @Test
     void singleArgument() {
+        // TODO: remove single get method from Main.
         assertEquals(List.of(2), main.get(3));
     }
 

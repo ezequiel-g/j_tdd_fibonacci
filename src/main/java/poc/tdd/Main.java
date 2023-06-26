@@ -15,6 +15,8 @@ public class Main {
     public static void main(final String[] args) {
         final Main main = new Main();
         main.validate(args);
+        final String result = main.get(Integer.parseInt(args[0])).toString();
+        main.show(result);
         // TODO: process input using RecursiveImpl by default, printing values in console depending on values
         // TODO: process input choosing implementation
     }
@@ -43,12 +45,22 @@ public class Main {
         }
     }
 
-    public List<Integer> get(final int position) {
+    List<Integer> get(final int position) {
         return get(position, position);
     }
 
-    public List<Integer> get(final int pos1, final int pos2) {
-        return IntStream.range(pos1, pos2 + 1).map(fibonacci::get).boxed().toList();
+    List<Integer> get(final int initialPosition, final int finalPosition) {
+        return IntStream.range(initialPosition, finalPosition + 1).map(fibonacci::get).boxed().toList();
+    }
+
+    void show(final String output) {
+        System.out.println(output);
+    }
+
+    String process(final String[] args) {
+        int initialPosition = Integer.parseInt(args[0]);
+        int finalPosition = args.length == 1 ? initialPosition : Integer.parseInt(args[1]);
+        return IntStream.range(initialPosition, finalPosition + 1).map(fibonacci::get).boxed().toList().toString();
     }
 
 }
