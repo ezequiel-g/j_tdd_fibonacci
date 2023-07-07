@@ -1,30 +1,37 @@
 package poc.tdd;
 
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class Main {
 
+    private static final String ALL_OPTION = "all";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("^\\d+$");
+
     private static final String MSG_MISSING_ARGUMENTS = "missing arguments";
     private static final String MSG_SINGLE_ARGUMENT_SHOULD_BE_AN_INTEGER = "for single option it should be an integer";
     private static final String MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS = "for two arguments should be numbers";
     private static final String MSG_ALL_REQUIRES_SECOND_OPTION_INTEGER = "when using all second argument should be an Integer";
-    private static final String ALL_OPTION = "all";
+
     private final Fibonacci fibonacci = new LoopImpl();
 
     public static void main(final String[] args) {
         final Main main = new Main();
+        // TODO: 500 can we make something as Main.run(args);
         try {
             main.validate(args);
             final String result = main.process(args);
-            main.show(result);
+            main.out(result);
         } catch (final RuntimeException ex) {
-            System.out.println("ERROR: " + ex.getMessage());
+            // TODO: 100 can we move the ERROR SUFFIX into err()?
+            main.err("ERROR: " + ex.getMessage());
         }
 
         // TODO: 950 process input choosing implementation
+    }
+
+    void err(final String err) {
+        System.err.println(err);
     }
 
     private boolean isNotANumber(final String args) {
@@ -58,15 +65,8 @@ public class Main {
         }
     }
 
-    List<Integer> get(final int position) {
-        return get(position, position);
-    }
-
-    List<Integer> get(final int initialPosition, final int finalPosition) {
-        return IntStream.range(initialPosition, finalPosition + 1).map(fibonacci::get).boxed().toList();
-    }
-
-    void show(final String output) {
+    void out(final String output) {
+        // TODO: 900 inject output class, so we can use different implementations. Create an abstraction to support, console and log output
         System.out.println(output);
     }
 

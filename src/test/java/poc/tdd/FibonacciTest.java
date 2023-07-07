@@ -1,5 +1,7 @@
 package poc.tdd;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,13 +40,22 @@ abstract class FibonacciTest {
                 Arguments.of(3, 2),
                 Arguments.of(2, 1),
                 Arguments.of(1, 1)
+                // TODO: 500 decide is we will include 0 as valid input output. https://es.wikipedia.org/wiki/Sucesi%C3%B3n_de_Fibonacci#Definici%C3%B3n_recurrente
         );
     }
 
     @ParameterizedTest
     @MethodSource("arguments")
-    void test(final int input, final int expected) {
+    void get(final int input, final int expected) {
         assertEquals(expected, fibonacci.get(input));
+    }
+
+
+    @Disabled
+    @Test
+    void get_withNegativeInput_should() {
+        // TODO: 200 check invalid negative values.
+        assertEquals(-999, fibonacci.get(-1));
     }
 
 }
