@@ -10,19 +10,25 @@ public class Main {
     private static final String MSG_MISSING_ARGUMENTS = "missing arguments";
     private static final String MSG_SINGLE_ARGUMENT_SHOULD_BE_AN_INTEGER = "for single option it should be an integer";
     private static final String MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS = "for two arguments should be numbers";
+    private static final String MSG_ALL_REQUIRES_SECOND_OPTION_INTEGER = "when using all second argument should be an Integer";
+    private static final String ALL_OPTION = "all";
     private final Fibonacci fibonacci = new LoopImpl();
 
     public static void main(final String[] args) {
         final Main main = new Main();
-        main.validate(args);
-        final String result = main.get(Integer.parseInt(args[0])).toString();
-        main.show(result);
-        // TODO: process input using RecursiveImpl by default, printing values in console depending on values
-        // TODO: process input choosing implementation
+        try {
+            main.validate(args);
+            final String result = main.process(args);
+            main.show(result);
+        } catch (final RuntimeException ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
+
+        // TODO: 950 process input choosing implementation
     }
 
-    private boolean isNotANumber(final String arg) {
-        return !DIGITS_PATTERN.matcher(arg).matches();
+    private boolean isNotANumber(final String args) {
+        return !DIGITS_PATTERN.matcher(args).matches();
     }
 
     void validate(final String[] args) {
@@ -35,13 +41,20 @@ public class Main {
         }
 
         if (args.length == 2) {
-            if (isNotANumber(args[0])) {
-                throw new IllegalArgumentException(MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS);
+            if (ALL_OPTION.equals(args[0])) {
+                if (isNotANumber(args[1])) {
+                    throw new IllegalArgumentException(MSG_ALL_REQUIRES_SECOND_OPTION_INTEGER);
+                }
+            } else {
+                if (isNotANumber(args[0])) {
+                    throw new IllegalArgumentException(MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS);
+                }
+
+                if (isNotANumber(args[1])) {
+                    throw new IllegalArgumentException(MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS);
+                }
             }
 
-            if (isNotANumber(args[1])) {
-                throw new IllegalArgumentException(MSG_BOTH_ARGUMENTS_SHOULD_BE_INTEGERS);
-            }
         }
     }
 
@@ -58,7 +71,7 @@ public class Main {
     }
 
     String process(final String[] args) {
-        int initialPosition = Integer.parseInt(args[0]);
+        int initialPosition = ALL_OPTION.equals(args[0]) ? 1 : Integer.parseInt(args[0]);
         int finalPosition = args.length == 1 ? initialPosition : Integer.parseInt(args[1]);
         return IntStream.range(initialPosition, finalPosition + 1).map(fibonacci::get).boxed().toList().toString();
     }
